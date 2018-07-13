@@ -1,0 +1,14 @@
+# Same can be achieved by executing following command:
+# kubectl expose deployment key-val-deployment --type=NodePort --name=key-val-service
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: key-val-service
+spec:
+  type: NodePort
+  ports:
+    - port: 9876
+      targetPort: 8080
+  selector:
+    app: key-val

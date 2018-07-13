@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: key-val-deployment
+ labels:
+   app: key-val
+spec:
+ replicas: 3
+ selector:
+   matchLabels:
+     app: key-val
+ template:
+   metadata:
+     labels:
+       app: key-val
+   spec:
+     containers:
+     - name: ws
+       image: ws:00.01
+       imagePullPolicy: Never
+       livenessProbe:
+         httpGet:
+           path: /api/v1/health
+           port: 8080
+           scheme: HTTP
+       readinessProbe:
+         httpGet:
+           path: /api/v1/health
+           port: 8080
+           scheme: HTTP
+       ports:
+       - containerPort: 8080
+       command: [ "java","-jar","ws.jar","--spring.config.location=/key-val-data/application.properties" ]
+       volumeMounts:
+       - name: config-volume
+         mountPath: /key-val-data
+     volumes:
+       - name: config-volume
+         configMap:
+           name: key-value-service-config
+           items:
+           - key: application.properties
+             path: application.properties
